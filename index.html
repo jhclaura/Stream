@@ -23,14 +23,14 @@
 		// player.setup({
 		//   file: "rtmp://128.122.151.187:1935/live/itp"
 		// });
-		
-		playlist: [{
-	        sources: [{ 
-	            file: "rtmp://128.122.151.187:1935/live/itp"
-	        },{ 
-	            file: "http://128.122.151.187:1935/live/itp/playlist.m3u8"
-	        }]
-		}],
+		player.setup({
+			playlist: [{
+		        sources: [{ 
+		            file: "rtmp://128.122.151.187:1935/live/itp"
+		        },{ 
+		            file: "http://128.122.151.187:1935/live/itp/playlist.m3u8"
+		        }]
+			}],
 		    primary: "flash"
 		});
 
