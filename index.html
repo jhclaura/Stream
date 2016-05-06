@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>ITP Thesis</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<style>
+			#player {
+				height: 80% !important;
+			}
+		</style>
+	</head>
+	<body>	
+	<div id="player"></div>
+	<script src="http://content.jwplatform.com/libraries/DbXZPMBQ.js"></script>
+	<script type="text/javascript">
+
+		var player = jwplayer('player');
+
+		player.setup({
+		  file: "rtmp://128.122.151.187:1935/live/itp"
+		});
+
+	</script>
+	</body>
+</html>
