@@ -1,37 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>ITP Thesis</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-		<meta name="mobile-web-app-capable" content="yes">
-		<meta name="apple-mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-		<style>
-			#player {
-				height: 80% !important;
-			}
-		</style>
-	</head>
-	<body>	
-	<div id="player"></div>
-	<script src="http://content.jwplatform.com/libraries/DbXZPMBQ.js"></script>
-	<script type="text/javascript">
-		var player = jwplayer('player');
 
-		// player.setup({
-		//   file: "rtmp://128.122.151.187:1935/live/itp"
-		// });
-		player.setup({
-			playlist: [{
-		        sources: [{ 
-		            file: "rtmp://128.122.151.187:1935/live/itp"
-		        },{ 
-		            file: "http://128.122.151.187:1935/live/itp/playlist.m3u8"
-		        }]
-			}],
-		    primary: "flash"
-		});
-	</script>
-	</body>
+<head>
+  <title>ITP Thesis</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <style>
+    body {
+      font: 16px sans-serif;
+      color: #fff;
+      margin: 0;
+      background-color: #222;
+      line-height: 150%;
+    }
+    a {
+      color: #fff;
+    }
+    h1 {
+      margin: 0;
+    }
+    #container {
+      max-width: 900px;
+      margin: auto;
+      margin-top: 20px;
+    }
+    #player {
+      width: 100%;
+      margin: 20px 0;
+    }
+    #next {
+      opacity: .7;
+    }
+    #chat {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container">
+    <h1>ITP Thesis Livestream</h1>
+    <div id="player"></div>
+    <div id="info">
+      <div id="current">On now: <span id="current-presenter"></span>
+      </div>
+      <div id="next">Up next: <span id="next-presenter"></span>
+      </div>
+    </div>
+    <div id="chat">
+      <a href="http://shep.info/channels/itp" target="_NEW">Join the chat room</a>
+    </div>
+
+  </div>
+  <script src="jwplayer.js"></script>
+  <script src="jquery.js"></script>
+  <script src="moment.min.js"></script>
+  <script src="moment-timezone-with-data-2010-2020.js"></script>
+  <script type="text/javascript">
+    var presentations;
+
+    var player = jwplayer('player');
+
+    player.setup({
+      playlist: [{
+        sources: [{
+          file: "rtmp://128.122.151.187:1935/live/itp"
+        }, {
+          file: "http://128.122.151.187:1935/live/itp/playlist.m3u8"
+        }]
+      }],
+      primary: "flash"
+    });
+
+
+    function showCurrent() {
+      var now = moment().tz('America/New_York');
+
+      var current = presentations.filter(function(p) {
+        var start = p.date;
+        var end = moment(start).add(12, 'minutes');
+        return now.isBetween(start, end);
+      })[0];
+
+      if (current) {
+        $('#current-presenter').html(current.person + ' - "' + current.project + '"');
+      } else {
+        $('#current-presenter').html('No one');
+      }
+
+      var next = presentations.filter(function(p) {
+        return p.date.isAfter(now);
+      })[0];
+
+      if (next) {
+        $('#next-presenter').html(next.person + ' (starting in ' + next.date.fromNow() + ')');
+      } else {
+        $('#next-presenter').html('No one!');
+      }
+
+      setTimeout(showCurrent, 1000);
+    }
+
+    $.getJSON('presenters.json', function(data) {
+      data = data.map(function(d) {
+        d.date = moment(d.date).tz('America/New_York');
+        return d;
+      });
+      data = data.sort(function(a, b) {
+        return a.date.isBefore(b.date) ? -1 : 1;
+      });
+
+      presentations = data;
+
+      showCurrent()
+    });
+  </script>
+</body>
+
 </html>

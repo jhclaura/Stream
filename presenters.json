@@ -1,0 +1,12 @@
+[
+  {
+    "person": "John Doe",
+    "project": "my cool project",
+    "date": "2016-05-09 18:38:00"
+  },
+  {
+    "person": "John Doe 2",
+    "project": "my cool project 2",
+    "date": "2016-05-09 18:20:00"
+  }
+]
