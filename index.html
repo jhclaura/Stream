@@ -1,217 +1,123 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-		<link type="text/css" rel="stylesheet" href="css/global.css" />
-		<script src="http://content.jwplatform.com/libraries/DbXZPMBQ.js"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-		<!-- // <script type="text/javascript" src="myplayer/swfobject.js"></script> -->
+<html lang="en">
 
-        <script type="text/javascript">
-        /*
-        	function embedPlayer(divId, width, height, callbackFunction) {
-				// For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. 
-				var swfVersionStr = "10.0.0";
-				// To use express install, set to playerProductInstall.swf, otherwise the empty string. 
-				var xiSwfUrlStr = "myplayer/playerProductInstall.swf";
-				var flashvars = {};
-				var params = {};
-				params.quality = "high";
-				params.bgcolor = "#000000";
-				params.allowscriptaccess = "sameDomain";
-				params.allowfullscreen = "true";
-				var attributes = {};
-				attributes.id = divId;
-				attributes.name = divId;
-				attributes.align = "middle";
-				swfobject.embedSWF(
-					"myplayer/SimpleStreamingVideoPlayer.swf", divId, 
-					width, height, swfVersionStr, xiSwfUrlStr, 
-					flashvars, params, attributes, callbackFunction);
-			}
-			
-			function playerInit(playerObjectId) {
-				//alert(playerObjectId);
-				if (playerObjectId == mainPlayer.player_id) {
-					mainPlayer.player_object.startStream(streamingServerAndApp, streams[0].main);
-				} else {
-					//alert("else");
-					for (var t = 0; t < thumbPlayers.length; t++) {
-						//alert("does " + playerObjectId + " == " + thumbPlayers[t].player_id);
-						if (playerObjectId == thumbPlayers[t].player_id) {
-							thumbPlayers[t].player_object.startStream(streamingServerAndApp, streams[t].thumb);
-							break;
-						}
-					}
-				}
-			}
-			
-			function playerClicked(playerObjectId) {
-				console.log("playerClicked " + playerObjectId);
-				for (var t = 0; t < thumbPlayers.length; t++) {
-					if (playerObjectId == thumbPlayers[t].player_id) {
-						mainPlayer.player_object.startStream(streamingServerAndApp, streams[t].main);
-						break;
-					}
-				}
-			}
-			
-			function netconnectionStatus(playerObjectId, statusCode) {
-				console.log("netconnectionStatus " + playerObjectId + " " + mainPlayer.player_id + " " + statusCode);
-				if (statusCode == "NetConnection.Connect.Success") {
-					if (playerObjectId == mainPlayer.player_id) {
-						mainPlayer.player_object.connectToSharedObject("itpSharedObject");
-					}
-				}
-			}
-			
-			function syncEvent(playerObjectId, key, value, code) {
-				console.log("syncEvent " + playerObjectId + " " + key + " " + value + " " + code);
-				//alert("syncEvent " + playerObjectId + " " + key + " " + value + " " + code);
+<head>
+  <title>ITP Thesis</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <style>
+    body {
+      font: 16px sans-serif;
+      color: #fff;
+      margin: 0;
+      background-color: #222;
+      line-height: 150%;
+    }
+    a {
+      color: #fff;
+    }
+    h1 {
+      margin: 0;
+    }
+    #container {
+      max-width: 900px;
+      margin: auto;
+      margin-top: 20px;
+    }
+    #player {
+      width: 100%;
+      margin: 20px 0;
+    }
+    #next {
+      opacity: .7;
+    }
+    #chat {
+      margin-top: 20px;
+    }
+  </style>
+</head>
 
-				if (playerObjectId == mainPlayer.player_id) {
-					if (code == "change") {
-						if (key == "presenter_name") {
-							document.getElementById("presenter").innerHTML = value;
-						} else if (key == "event_name") {
-							document.getElementById("event").innerHTML = value;
-						} else if (key == "new_record") {
-							if (value == true) {
-								//alert("New Video Recording Now!" + key + " " + value + " " + code);
-								// This signals a new recording
-								// This should trigger a new popcorn start time/reset
-								// Unique id
-							}
-							else {
-								//alert("Finished Recording OR page loading");
-							}
-							
-						} else {
-							//alert("key == " + key);
-						}
-					}
-					else 
-					{
-						//alert("Not change?");
-					}
-				} else {
-					//alert("Not mainPlayer");
-				}
-			}
-			
-			function dimensionsChanged(playerObjectId, width, height) {
-				//alert("dimensionsChanged: " + playerObjectId + " " + width + " " + height);			
-			}
+<body>
+  <div id="container">
+    <h1>ITP Thesis Livestream</h1>
+    <div id="player"></div>
+    <div id="info">
+      <div id="current">On now: <span id="current-presenter"></span>
+      </div>
+      <div id="next">Up next: <span id="next-presenter"></span>
+      </div>
+    </div>
+    <div id="chat">
+      <a href="http://shep.info/channels/itp" target="_NEW">Join the chat room</a>
+    </div>
+
+  </div>
+  <script src="jwplayer.js"></script>
+  <script src="jquery.js"></script>
+  <script src="moment.min.js"></script>
+  <script src="moment-timezone-with-data-2010-2020.js"></script>
+  <script type="text/javascript">
+    var presentations;
+
+    var player = jwplayer('player');
+
+    player.setup({
+      playlist: [{
+        sources: [{
+          file: "rtmp://128.122.151.187:1935/live/itp"
+        }, {
+          file: "http://128.122.151.187:1935/live/itp/playlist.m3u8"
+        }]
+      }],
+      primary: "flash"
+    });
 
 
-			function Stream(_main, _thumb) {
-				this.main = _main;
-				this.thumb = _thumb;
-			}
-			
-			var streams = new Array();
-			streams[0] = new Stream("camera2.stream","camera2.thumb.stream");
-			streams[1] = new Stream("camera3.stream","camera3.thumb.stream");
-			streams[2] = new Stream("camera4.stream","camera4.thumb.stream");
-			streams[3] = new Stream("screenstream","screenstreamthumb");
-			//streams[4] = new Stream("camera5.stream","camera5.thumb.stream");
+    function showCurrent() {
+      var now = moment().tz('America/New_York');
 
+      var current = presentations.filter(function(p) {
+        var start = p.date;
+        var end = moment(start).add(12, 'minutes');
+        return now.isBetween(start, end);
+      })[0];
 
-			var streamingServerAndApp = "rtmp://128.122.151.187/live/";
+      if (current) {
+        $('#current-presenter').html(current.person + ' - "' + current.project + '"');
+      } else {
+        $('#current-presenter').html('No one');
+      }
 
-			function Player(_id, _object) {
-				this.player_id = _id;
-				this.player_object = _object;
-			}			
-			
-			var mainPlayer = null;
-			var thumbPlayers = new Array();
+      var next = presentations.filter(function(p) {
+        return p.date.isAfter(now);
+      })[0];
 
-			$(document).ready(function() {
-				embedPlayer("mainPlayer",800,450, function(e) {
-					if (e.success) {
-						mainPlayer = new Player(e.id, e.ref);	
-					}
-				});
+      if (next) {
+        $('#next-presenter').html(next.person + ' (starting in ' + next.date.fromNow() + ')');
+      } else {
+        $('#next-presenter').html('No one!');
+      }
 
-				for (var i = 0; i < streams.length; i++) {
-					embedPlayer("thumbPlayer"+(i+1),160,90, function(e) {
-						if (e.success) {
-							thumbPlayers.push(new Player(e.id, e.ref));
-						}
-					});
-				}
-								
-			});
-		*/
-		</script>
-	</head>
-	<body data-spy="scroll" data-target=".subnav" data-offset="50" data-twttr-rendered="true">
-		<div class="navbar navbar-fixed-top">
-			<div class="navbar-inner">
-				<div class="container">
-					<a class="brand">
-						<span class="cl-blue" id="presenter">Presenter</span>
-					</a>
-					<div class="nav-collapse">
-						<ul class="nav pull-right">
-							<li><a href="http://itp.nyu.edu/thesis" target="_blank" id="event">Event</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="main">
-			<div class="container">
-				<div class="row">
-					<div class="box-wrapper span12">
-						<div class="widget">
-							<div class="wrapper-search" style="padding-left:5px;">
-								<div class="span11 demo-video">
-										<div id="mainPlayer"></div>
-										<!-- <div style="width: 850px; padding-top: 10px; padding-bottom: 25px;">
-											<div id="thumbPlayer1"></div>
-											<div id="thumbPlayer2"></div>
-											<div id="thumbPlayer3"></div>
-											<div id="thumbPlayer4"></div>
-										</div> -->
-								</div>
-							</div>
-						</div>
-		<div style="float: left;
-			width: 98.5%;
-			background: rgba(0,0,0,.5);
-			padding: 5px 7px;
-			border-radius: 3px;
-			margin: 0 0 10px 0;
-			font-size: 1.2em;">
-			<a style="float: left" href="http://shep.info/channels/itp" target="_NEW">Join Chat Room shep.info/channels/itp</a>
-			<!-- <a style="float: right" href="http://128.122.151.187:1935/live/camera4.stream/playlist.m3u8">Mobile Stream</a> -->
-		</div>
+      setTimeout(showCurrent, 1000);
+    }
 
-					</div>
-				</div>
-			</div>
-		</div>
+    $.getJSON('presenters.json', function(data) {
+      data = data.map(function(d) {
+        d.date = moment(d.date).tz('America/New_York');
+        return d;
+      });
+      data = data.sort(function(a, b) {
+        return a.date.isBefore(b.date) ? -1 : 1;
+      });
 
-		<script type="text/javascript">
-			var player = jwplayer('mainPlayer');
+      presentations = data;
 
-			// player.setup({
-			//   file: "rtmp://128.122.151.187:1935/live/itp"
-			// });
-			player.setup({
-				playlist: [{
-			        sources: [{ 
-			            file: "rtmp://128.122.151.187:1935/live/itp"
-			        },{ 
-			            file: "http://128.122.151.187:1935/live/itp/playlist.m3u8"
-			        }]
-				}],
-			    primary: "flash"
-			});
-		</script>
-	</body>
+      showCurrent()
+    });
+  </script>
+</body>
+
 </html>
-
-
