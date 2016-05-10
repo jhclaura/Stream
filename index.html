@@ -36,6 +36,18 @@
     }
     #chat {
       margin-top: 20px;
+      background: rgba(255,255,255, 0.2);
+      width:400px;
+      margin:auto;
+    }
+    #signup {
+      width:400px;
+      height:200px;
+    }
+    @media (max-width:600px) {
+      #signup {
+        height:350px;
+      }
     }
   </style>
 </head>
@@ -51,7 +63,10 @@
       </div>
     </div>
     <div id="chat">
-      <a href="http://shep.info/channels/itp" target="_NEW">Join the chat room</a>
+      <iframe id="signup" src="https://itpthesis2016-signup.herokuapp.com/" scrolling="no" align="middle">
+      </iframe>
+
+      <!-- <a href="http://shep.info/channels/itp" target="_NEW">Join the chat room</a> -->
     </div>
 
   </div>
