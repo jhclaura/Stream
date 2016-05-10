@@ -49,6 +49,9 @@
         height: 350px;
       }
     }
+    #lol {
+      display: none;
+    }
   </style>
 </head>
 
@@ -67,13 +70,19 @@
     </div>
 
   </div>
+
+  <div id="lol"></div>
   <script src="https://content.jwplatform.com/libraries/DbXZPMBQ.js"></script>
   <!-- <script src="https://content.jwplatform.com/libraries/rzUNHyv0.js"></script> -->
   <script src="jquery.js"></script>
   <script src="moment.min.js"></script>
   <script src="moment-timezone-with-data-2010-2020.js"></script>
+  <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
   <script type="text/javascript">
-    var presentations, timeout;
+    var socket = io.connect('https://thesis-lol.herokuapp.com');
+
+    var presentations, offset, timeout;
 
     var player = jwplayer('player');
 
@@ -87,6 +96,13 @@
       }],
       primary: "flash"
     });
+
+
+    socket.on('lol', function(data) {
+      offset = parseInt(data.offset) || 0;
+      $('#lol').html(data.html);
+    });
+
 
 
     function showCurrent() {
