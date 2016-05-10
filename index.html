@@ -35,18 +35,18 @@
       opacity: .7;
     }
     #chat {
-      background: rgba(255,255,255, 0.2);
-      width:400px;
-      margin:auto;
+      background: rgba(255, 255, 255, 0.2);
+      width: 400px;
+      margin: auto;
       margin-top: 20px;
     }
     #signup {
-      width:400px;
-      height:200px;
+      width: 400px;
+      height: 200px;
     }
-    @media (max-width:600px) {
+    @media (max-width: 600px) {
       #signup {
-        height:350px;
+        height: 350px;
       }
     }
   </style>
@@ -70,13 +70,13 @@
     </div>
 
   </div>
-  <script src="http://content.jwplatform.com/libraries/DbXZPMBQ.js"></script>
+  <script src="https://content.jwplatform.com/libraries/DbXZPMBQ.js"></script>
   <!-- <script src="https://content.jwplatform.com/libraries/rzUNHyv0.js"></script> -->
   <script src="jquery.js"></script>
   <script src="moment.min.js"></script>
   <script src="moment-timezone-with-data-2010-2020.js"></script>
   <script type="text/javascript">
-    var presentations;
+    var presentations, timeout;
 
     var player = jwplayer('player');
 
@@ -117,22 +117,30 @@
         $('#next-presenter').html('No one!');
       }
 
-      setTimeout(showCurrent, 1000);
+      clearTimeout(timeout);
+      timeout = setTimeout(showCurrent, 1000);
     }
 
-    $.getJSON('presenters.json', function(data) {
-      data = data.map(function(d) {
-        d.date = moment(d.date).tz('America/New_York');
-        return d;
-      });
-      data = data.sort(function(a, b) {
-        return a.date.isBefore(b.date) ? -1 : 1;
-      });
+    function getData() {
 
-      presentations = data;
+      $.getJSON('https://jhclaura.github.io/Stream/presenters.json', function(data) {
+        data = data.map(function(d) {
+          d.date = moment(d.date).tz('America/New_York');
+          return d;
+        });
+        data = data.sort(function(a, b) {
+          return a.date.isBefore(b.date) ? -1 : 1;
+        });
 
-      showCurrent()
-    });
+        presentations = data;
+
+        showCurrent()
+      });
+    }
+
+    getData();
+
+    setInterval(getData, 10000);
   </script>
 </body>
 
