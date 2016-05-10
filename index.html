@@ -35,9 +35,6 @@
       opacity: .7;
     }
     #chat {
-      /* background: rgba(255, 255, 255, 0.2); */
-      /* width: 400px; */
-      /* margin: auto; */
       margin-top: 20px;
     }
     #signup {
@@ -82,7 +79,9 @@
   <script type="text/javascript">
     var socket = io.connect('https://thesis-lol.herokuapp.com');
 
-    var presentations, offset, timeout;
+    var presentations, timeout;
+
+    var offset = 0;
 
     var player = jwplayer('player');
 
@@ -99,16 +98,18 @@
 
 
     socket.on('lol', function(data) {
-      offset = parseInt(data.offset) || 0;
+      offset = data.offset ? parseInt(data.offset) : 0;
       $('#lol').html(data.html);
     });
-
-
 
     function showCurrent() {
       var now = moment().tz('America/New_York');
 
-      var current = presentations.filter(function(p) {
+      var _presentations = presentations.map(function(p) {
+        return {date: moment(p.date).add(offset, 'minutes'), person: p.person, project: p.project};
+      });
+
+      var current = _presentations.filter(function(p) {
         var start = p.date;
         var end = moment(start).add(12, 'minutes');
         return now.isBetween(start, end);
@@ -120,7 +121,7 @@
         $('#current-presenter').html('No one');
       }
 
-      var next = presentations.filter(function(p) {
+      var next = _presentations.filter(function(p) {
         return p.date.isAfter(now);
       })[0];
 
@@ -131,12 +132,13 @@
       }
 
       clearTimeout(timeout);
-      timeout = setTimeout(showCurrent, 1000);
+      timeout = setTimeout(showCurrent, 2000);
     }
 
     function getData() {
 
       $.getJSON('https://jhclaura.github.io/Stream/presenters.json', function(data) {
+      // $.getJSON('presenters.json', function(data) {
         data = data.map(function(d) {
           d.date = moment(d.date).tz('America/New_York');
           return d;
